@@ -1,0 +1,5 @@
+{
+  "InstanceType": "t3.medium",
+  "KeyName": "skyoptima-key",
+  "DataBucketName": "skyoptima-data-bucket"
+}
