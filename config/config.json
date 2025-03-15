@@ -1,0 +1,18 @@
+{
+  "environment": "production",
+  "database": {
+    "host": "db.skyoptima.com",
+    "port": 5432,
+    "user": "skyoptima_user",
+    "password": "secure_password",
+    "dbname": "skyoptima_db"
+  },
+  "logging": {
+    "level": "INFO",
+    "log_file": "logs/system_logs.log"
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 5000
+  }
+}
