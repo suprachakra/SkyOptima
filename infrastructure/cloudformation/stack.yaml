@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "CloudFormation stack for deploying SkyOptima infrastructure resources."
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.medium
+    Description: "EC2 instance type for SkyOptima app."
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: "Name of an existing EC2 KeyPair for SSH access."
+  DataBucketName:
+    Type: String
+    Description: "The name of the S3 bucket for SkyOptima data."
+
+Resources:
+  SkyOptimaInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: ami-0abcdef1234567890  # Placeholder AMI ID, update as necessary
+      SecurityGroupIds:
+        - sg-0123456789abcdef0  # Placeholder, update as necessary
+      SubnetId: subnet-01234567
+      Tags:
+        - Key: Name
+          Value: SkyOptima-App-Instance
+
+  SkyOptimaDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref DataBucketName
+      AccessControl: Private
+      Tags:
+        - Key: Project
+          Value: SkyOptima
+
+Outputs:
+  InstanceId:
+    Description: "The Instance ID of the SkyOptima EC2 instance"
+    Value: !Ref SkyOptimaInstance
+  BucketName:
+    Description: "The name of the SkyOptima data bucket"
+    Value: !Ref SkyOptimaDataBucket
