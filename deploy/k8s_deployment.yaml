@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skyoptima-deployment
+  labels:
+    app: skyoptima
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: skyoptima
+  template:
+    metadata:
+      labels:
+        app: skyoptima
+    spec:
+      containers:
+      - name: skyoptima-container
+        image: skyoptima:latest
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: skyoptima-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skyoptima-service
+spec:
+  selector:
+    app: skyoptima
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer
