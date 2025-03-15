@@ -1,0 +1,35 @@
+# ci_cd_pipeline.yaml: Sample CI/CD pipeline configuration using GitLab CI/CD
+
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKER_IMAGE: skyoptima:latest
+
+test_job:
+  stage: test
+  script:
+    - echo "Running unit and integration tests..."
+    - pytest --maxfail=1 --disable-warnings -q
+  artifacts:
+    paths:
+      - reports/
+
+build_job:
+  stage: build
+  script:
+    - echo "Building Docker image..."
+    - docker build -t $DOCKER_IMAGE -f deploy/Dockerfile .
+  artifacts:
+    paths:
+      - image.tar
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying to Kubernetes..."
+    - kubectl apply -f deploy/k8s_deployment.yaml
+  only:
+    - main
