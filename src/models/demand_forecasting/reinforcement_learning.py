@@ -37,20 +37,31 @@ class PricingAgent:
             logger.info("Exploiting: Choosing best action %s for state %s", action, state)
             return action
 
-    def update_q(self, state, action, reward, next_state):
-        key = self.get_state_key(state)
-        next_key = self.get_state_key(next_state)
-        if key not in self.q_table:
-            self.q_table[key] = np.zeros(len(self.actions))
-        if next_key not in self.q_table:
-            self.q_table[next_key] = np.zeros(len(self.actions))
-        action_index = self.actions.index(action)
-        best_next_action = np.max(self.q_table[next_key])
-        td_target = reward + self.gamma * best_next_action
-        td_error = td_target - self.q_table[key][action_index]
-        self.q_table[key][action_index] += self.lr * td_error
-        # Decay exploration rate
-        self.epsilon *= self.epsilon_decay
+    def update_q(self, state, action, reward, next_state, competitor_adjustment=0):
+    """
+    Update the Q-table with an additional competitor price adjustment.
+    
+    Args:
+        state (tuple): Current state.
+        action: Executed action.
+        reward (float): Received reward.
+        next_state (tuple): Next state after action.
+        competitor_adjustment (float): Adjustment factor based on competitor pricing data.
+    """
+    key = self.get_state_key(state)
+    next_key = self.get_state_key(next_state)
+    if key not in self.q_table:
+        self.q_table[key] = np.zeros(len(self.actions))
+    if next_key not in self.q_table:
+        self.q_table[next_key] = np.zeros(len(self.actions))
+    action_index = self.actions.index(action)
+    best_next_action = np.max(self.q_table[next_key])
+    # Incorporate competitor adjustment into TD target
+    td_target = reward + competitor_adjustment + self.gamma * best_next_action
+    td_error = td_target - self.q_table[key][action_index]
+    self.q_table[key][action_index] += self.lr * td_error
+    self.epsilon *= self.epsilon_decay
+
 
 if __name__ == "__main__":
     # Define a simple scenario: State represents current demand level, actions are price adjustments.
