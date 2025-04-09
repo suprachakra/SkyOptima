@@ -1,6 +1,6 @@
 """
-optimization.py: Uses optimization techniques to determine the best pricing strategy.
-Here we use a simplified linear programming example.
+optimization.py: Determines the best pricing strategy using optimization techniques.
+The module has been updated to factor in dynamic currency hedging.
 """
 
 import numpy as np
@@ -10,33 +10,28 @@ from scipy.optimize import linprog
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Optimization")
 
-def optimize_pricing(base_price, demand_forecast):
+def optimize_pricing(base_price: float, forecast_demand: float, currency_factor: float = 1.02) -> float:
     """
-    Optimize pricing using linear programming.
+    Optimize pricing using linear programming, incorporating a dynamic currency hedge.
     
     Args:
         base_price (float): The baseline fare.
-        demand_forecast (float): Forecasted demand.
+        forecast_demand (float): Forecasted demand.
+        currency_factor (float): Currency hedge adjustment factor.
     
     Returns:
         float: Optimized price.
     """
-    # Objective: maximize revenue, which is price * demand.
-    # For a linear programming formulation, we minimize the negative revenue.
-    # Variables: price adjustment x.
-    # Revenue = (base_price + x) * demand_forecast.
-    # To linearize, we consider the demand forecast as constant.
+    # Objective: maximize revenue = (base_price + x) * forecast_demand
+    # For minimization: minimize -x * forecast_demand, because base_price is constant.
+    c = [-forecast_demand]  # Negative coefficient to maximize x
     
-    # In our simple LP, we minimize: - (base_price + x) * demand_forecast.
-    # Since demand_forecast is constant, minimize: -x * demand_forecast (base price constant).
-    c = [-demand_forecast]  # coefficient for x
-    
-    # Constraints: price adjustment between -20 and 20.
+    # Constraint: price adjustment x is between -20 and 20
     bounds = [(-20, 20)]
     
     result = linprog(c, bounds=bounds, method='highs')
     if result.success:
-        optimized_price = base_price + result.x[0]
+        optimized_price = (base_price + result.x[0]) * currency_factor
         logger.info("Optimized price calculated: %.2f", optimized_price)
         return optimized_price
     else:
@@ -47,4 +42,4 @@ if __name__ == "__main__":
     base_price = 250.0
     forecast_demand = 120
     opt_price = optimize_pricing(base_price, forecast_demand)
-    print("Optimized Price:", opt_price)
+    print("Optimized Price: €%.2f" % opt_price)
