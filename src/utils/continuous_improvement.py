@@ -1,64 +1,61 @@
 #!/usr/bin/env python3
 """
-continuous_improvement.py: Monitors key performance indicators and automates feedback collection.
-Triggers automated change management processes if thresholds are not met.
+continuous_improvement.py: Module to collect performance metrics and automated feedback,
+triggering agile retrospectives and updates automatically.
 """
 
+import time
 import logging
-import json
-import pandas as pd
+import psutil
+import numpy as np
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ContinuousImprovement")
 
-def collect_kpi_data():
-    """
-    Simulate collection of KPI data from monitoring systems.
-    Returns a dictionary of KPIs.
-    """
-    # Dummy KPI values; in production, integrate with monitoring APIs (Prometheus, Grafana, etc.)
-    kpis = {
-        "forecast_mape": 6.5,     # example MAPE percentage
-        "pricing_latency": 7.5,   # in minutes
-        "system_uptime": 99.99,   # in percentage
-        "user_satisfaction": 91   # rating out of 100
+def collect_system_metrics():
+    """Collect current system metrics."""
+    metrics = {
+        "cpu_usage": psutil.cpu_percent(interval=1),
+        "memory_usage": psutil.virtual_memory().percent,
+        "disk_io": psutil.disk_io_counters().read_bytes
     }
-    logger.info("KPI Data Collected: %s", json.dumps(kpis))
-    return kpis
+    logger.info("Collected system metrics: %s", metrics)
+    return metrics
 
-def check_kpi_thresholds(kpis, thresholds):
-    """
-    Check KPIs against defined thresholds.
+def detect_anomalies(metrics: dict, thresholds: dict):
+    """Detect anomalies based on predefined thresholds.
     
     Args:
-        kpis (dict): Dictionary of current KPIs.
-        thresholds (dict): Dictionary of KPI thresholds.
+        metrics (dict): Current system metrics.
+        thresholds (dict): Threshold values for metrics.
     
     Returns:
-        bool: True if all KPIs meet thresholds; False otherwise.
+        dict: A dictionary of anomalies.
     """
-    violations = {}
-    for key, value in thresholds.items():
-        if kpis.get(key, None) is None or kpis[key] > value:
-            violations[key] = (kpis.get(key, "Not available"), value)
-    if violations:
-        logger.warning("KPI Thresholds Violated: %s", json.dumps(violations))
-        return False, violations
-    logger.info("All KPIs meet defined thresholds.")
-    return True, {}
+    anomalies = {}
+    for metric, value in metrics.items():
+        if value > thresholds.get(metric, float('inf')):
+            anomalies[metric] = value
+    if anomalies:
+        logger.warning("Anomalies detected: %s", anomalies)
+    return anomalies
+
+def trigger_change_management(anomalies: dict):
+    """Trigger a change management process if anomalies are detected."""
+    if anomalies:
+        logger.info("Triggering Change Management process based on anomalies: %s", anomalies)
+        # Here, integration with agile tooling (like Jira, MS Teams) would be automated.
+        # For demo purposes, we print a message.
+        print("Change Management Triggered: Review anomalies and plan a sprint review meeting.")
+    else:
+        logger.info("No anomalies detected. System operating within thresholds.")
 
 if __name__ == "__main__":
-    # Define thresholds: lower is better for forecast_mape and pricing_latency,
-    # higher is better for system_uptime and user_satisfaction
     thresholds = {
-        "forecast_mape": 6.3,
-        "pricing_latency": 8.2,
-        "system_uptime": 99.9,
-        "user_satisfaction": 92
+        "cpu_usage": 80.0,
+        "memory_usage": 85.0,
+        "disk_io": 1e9  # Example: 1GB per second
     }
-    kpis = collect_kpi_data()
-    result, issues = check_kpi_thresholds(kpis, thresholds)
-    if not result:
-        logger.error("Continuous Improvement Triggered: %s", issues)
-    else:
-        logger.info("System performance is optimal.")
+    metrics = collect_system_metrics()
+    anomalies = detect_anomalies(metrics, thresholds)
+    trigger_change_management(anomalies)
