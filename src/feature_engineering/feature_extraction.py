@@ -11,29 +11,23 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("FeatureExtraction")
 
 def extract_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Extract and generate features from the raw DataFrame.
-    
-    Args:
-        df (pd.DataFrame): Input DataFrame with raw booking data.
-    
-    Returns:
-        pd.DataFrame: DataFrame with additional features.
-    """
-    # Ensure DepartureDate is in datetime format
+    # Convert date and extract temporal features
     df['DepartureDate'] = pd.to_datetime(df['DepartureDate'], errors='coerce')
-    
-    # Extract temporal features
     df['DepartureMonth'] = df['DepartureDate'].dt.month
     df['DepartureDay'] = df['DepartureDate'].dt.day
     df['DepartureWeekday'] = df['DepartureDate'].dt.weekday
-    
-    # Create a rolling average of Price over a window of 3 (example)
+
+    # Rolling average of Price
     df['PriceRollingAvg'] = df['Price'].rolling(window=3, min_periods=1).mean()
-    
-    # Interaction term: Example, Price adjusted by a weekday factor
     df['WeekdayPriceFactor'] = df['Price'] * (df['DepartureWeekday'] + 1)
     
-    logger.info("Feature extraction completed.")
+    # Loyalty Feature Extraction
+    # Assuming loyalty data is merged into the DataFrame with column 'GuestTier' (e.g., numeric tiers)
+    if 'GuestTier' in df.columns:
+        df['LoyaltyIndex'] = df['GuestTier'].apply(lambda x: x / 10)  # Normalize tier value (example)
+        # Calculate a redemption probability using a logistic function
+        df['RedemptionProbability'] = df['LoyaltyIndex'].apply(lambda x: 1 / (1 + np.exp(- (x - 0.5) * 10)))
+    
     return df
 
 if __name__ == "__main__":
