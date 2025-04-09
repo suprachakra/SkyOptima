@@ -1,22 +1,28 @@
 # parameters.yaml: Configuration parameters for SkyOptima
 
-# Model parameters
 arima_order: [1, 1, 1]
 lstm_epochs: 10
 lstm_batch_size: 4
 xgboost_n_estimators: 100
 
-# Data processing parameters
 feature_lag: 3
 rolling_window: 3
 
-# Pricing parameters
 base_price: 250.0
 price_elasticity: 0.1
 
-# System performance thresholds
 max_data_latency_seconds: 5
 target_uptime: 99.99
 
-# Security parameters
-encryption_key_path: "config/encryption.key"
+# Sustainability and Forecasting Enhancements
+carbon_price: 98                 # EU ETS carbon pricing in €/ton
+emission_factor: 1.0             # Route-specific emission factor in tons
+halal_event_calendar: "data/halal_events.csv"  # Path to Islamic event data
+lunar_cycle_adjustment: true
+
+# Network Disruption Thresholds
+disruption_latency_target: 8.2    # in minutes
+real_time_api_interval: 2         # frequency in minutes for competitor data
+
+# Additional parameters for continuous improvement
+feedback_collection_interval: 1440  # in minutes (daily)
