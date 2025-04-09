@@ -24,7 +24,10 @@ def map_legacy_booking(legacy_record):
             "booking_date": legacy_record.get("bk_date"),
             "class": legacy_record.get("class"),
             "price": float(legacy_record.get("fare", 0)),
-            "status": legacy_record.get("status", "confirmed")
+            "status": legacy_record.get("status", "confirmed"),
+            # IATA NDC fields
+            "ndc_ticket_number": legacy_record.get("ticket_no", None),
+            "one_order_reference": legacy_record.get("order_ref", None)
         }
         return standardized_record
     except Exception as e:
