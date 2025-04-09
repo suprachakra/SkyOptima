@@ -9,23 +9,24 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("PricingStrategy")
 
-def calculate_optimal_price(base_price, forecast_demand, elasticity=0.1, carbon_price=98, emissions=1.0):
+def calculate_optimal_price(base_price, forecast_demand, baseline_demand=100, elasticity=0.1, route_emissions=0, lambda_CO2=0):
     """
-    Calculate the optimal price based on forecast demand, price elasticity, and carbon cost.
+    Calculate the optimal price including carbon cost.
     
     Args:
-        base_price (float): The baseline fare.
-        forecast_demand (float): Forecasted demand (e.g., booking count).
+        base_price (float): Baseline fare.
+        forecast_demand (float): Forecasted demand.
+        baseline_demand (float): Baseline demand (default 100).
         elasticity (float): Price elasticity factor.
-        carbon_price (float): Carbon cost per ton (default from EU ETS, e.g., €98).
-        emissions (float): Route-specific emission factor (tons CO2 per passenger).
+        route_emissions (float): Estimated CO2 emissions for the route.
+        lambda_CO2 (float): Carbon price per ton (e.g., EU ETS value).
     
     Returns:
         float: Recommended optimal price.
     """
-    adjustment = elasticity * (forecast_demand - 100)  # Adjust if demand exceeds baseline
-    carbon_adjustment = carbon_price * emissions  # Incorporate sustainability cost
-    optimal_price = base_price + adjustment + carbon_adjustment
+    demand_adjustment = elasticity * (forecast_demand - baseline_demand)
+    carbon_cost = lambda_CO2 * route_emissions  # Real-time value fetched via API integration
+    optimal_price = base_price + demand_adjustment + carbon_cost
     return optimal_price
 
 if __name__ == "__main__":
