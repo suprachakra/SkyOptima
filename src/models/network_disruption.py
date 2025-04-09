@@ -1,6 +1,7 @@
 """
-network_disruption.py: Implements a Graph Neural Network (GNN) module for real-time disruption management.
-This module predicts cascading delay effects within the airline network.
+Implements a network disruption module using a Graph Neural Network (GNN) approach.
+This module predicts cascading effects of disruptions in real time.
+Note: This is a simplified version; production use would require a full GNN implementation.
 """
 
 import numpy as np
@@ -9,37 +10,42 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("NetworkDisruption")
 
-class GraphAttentionNetwork:
-    def __init__(self, layers=3):
-        self.layers = layers
-        # Initialize parameters (dummy initialization for example)
-        self.weights = [np.random.rand(10, 10) for _ in range(layers)]
-    
-    def predict(self, delay_event):
-        # Dummy prediction: Summing delay_event with random noise for illustration
-        prediction = delay_event + np.random.rand() * 5
-        return prediction
-
 class DisruptionPredictor:
-    def __init__(self, network_graph):
-        self.gnn = GraphAttentionNetwork(layers=3)
-        self.network_graph = network_graph  # Expected to be an adjacency list or similar structure
-    
-    def predict_effects(self, delay_event):
-        """Predict the cascading disruption effects given a delay event.
-        
-        Args:
-            delay_event (float): Delay caused by an incident (in minutes).
-        
-        Returns:
-            float: Predicted cumulative network delay.
+    def __init__(self, network_graph: dict):
         """
-        cumulative_delay = self.gnn.predict(delay_event)
-        logger.info("Predicted network delay: %.2f minutes for initial delay of %.2f minutes", cumulative_delay, delay_event)
-        return cumulative_delay
+        Initializes the predictor with a given network graph.
+        network_graph: dict, keys are nodes (e.g., aircraft, airports) and values are lists of connected nodes.
+        """
+        self.network_graph = network_graph
+        logger.info("DisruptionPredictor initialized with network graph.")
+
+    def predict_cascading_effects(self, delay_event: dict) -> dict:
+        """
+        Predict cascading effects for a given delay event using a mock GNN approach.
+        delay_event: dict, with keys 'node' and 'delay'
+        Returns:
+            dict: Predicted impact on connected nodes.
+        """
+        affected_nodes = {}
+        source = delay_event.get("node")
+        base_delay = delay_event.get("delay", 0)
+        # For each neighbor in the network graph, predict delay propagation as a fraction of base delay.
+        if source in self.network_graph:
+            for neighbor in self.network_graph[source]:
+                propagated_delay = base_delay * np.random.uniform(0.3, 0.7)  # Random factor for demo
+                affected_nodes[neighbor] = round(propagated_delay, 2)
+        logger.info("Predicted cascading effects: %s", affected_nodes)
+        return affected_nodes
 
 if __name__ == "__main__":
-    # Example usage: simulate a delay of 15 minutes
-    predictor = DisruptionPredictor(network_graph={})
-    predicted_delay = predictor.predict_effects(15)
-    logger.info("Final predicted network delay: %.2f minutes", predicted_delay)
+    # Example network graph for demonstration
+    network_graph = {
+        "Airport_A": ["Airport_B", "Airport_C"],
+        "Airport_B": ["Airport_A", "Airport_D"],
+        "Airport_C": ["Airport_A", "Airport_D"],
+        "Airport_D": ["Airport_B", "Airport_C"]
+    }
+    predictor = DisruptionPredictor(network_graph)
+    delay_event = {"node": "Airport_A", "delay": 30}  # e.g., 30 minutes delay at Airport_A
+    impact = predictor.predict_cascading_effects(delay_event)
+    print("Cascading Impact:", impact)
