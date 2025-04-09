@@ -1,7 +1,10 @@
 # ci_cd_pipeline.yaml: Sample CI/CD pipeline configuration using GitLab CI/CD
+
 stages:
   - test
   - build
+  - security_scan
+  - performance_scan
   - deploy
 
 variables:
@@ -24,6 +27,24 @@ build_job:
   artifacts:
     paths:
       - image.tar
+
+security_scan:
+  stage: security_scan
+  script:
+    - echo "Running security scans..."
+    - docker run --rm -v $(pwd):/app aquasec/trivy:latest image $DOCKER_IMAGE
+  artifacts:
+    paths:
+      - security_reports/
+
+performance_scan:
+  stage: performance_scan
+  script:
+    - echo "Running performance tests..."
+    - pytest --maxfail=1 --disable-warnings -q tests/test_performance.py
+  artifacts:
+    paths:
+      - performance_reports/
 
 deploy_job:
   stage: deploy
