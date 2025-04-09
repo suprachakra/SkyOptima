@@ -1,5 +1,4 @@
 # ci_cd_pipeline.yaml: Sample CI/CD pipeline configuration using GitLab CI/CD
-
 stages:
   - test
   - build
