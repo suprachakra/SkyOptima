@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-pricing_strategy.py: Implements a dynamic pricing strategy module with carbon-aware adjustments.
+Implements a dynamic pricing strategy module with carbon-aware adjustments.
 This module integrates sustainability (via real-time EU ETS carbon pricing) and dynamic currency hedging.
 """
 
