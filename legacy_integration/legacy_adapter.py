@@ -1,22 +1,21 @@
 """
-legacy_adapter.py: Upgraded legacy system adapter for SkyOptima.
-This module now supports IATA NDC 5.0 and ONE Order standards.
+Upgraded adapter for integrating legacy airline systems with SkyOptima.
+Supports IATA NDC 5.0 and ONE Order standards.
 """
 
 import json
 import logging
-import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("LegacyAdapter")
 
 def map_legacy_booking(legacy_record: dict) -> dict:
     """
-    Map a legacy booking record to the SkyOptima schema, incorporating IATA NDC elements.
+    Map a legacy booking record to the standardized SkyOptima schema.
     
     Args:
-        legacy_record (dict): Raw legacy booking data.
-    
+        legacy_record (dict): Legacy booking data.
+        
     Returns:
         dict: Standardized booking record.
     """
@@ -29,18 +28,17 @@ def map_legacy_booking(legacy_record: dict) -> dict:
             "Class": legacy_record.get("class"),
             "Price": float(legacy_record.get("fare", 0)),
             "Status": legacy_record.get("status", "confirmed"),
-            # Additional fields for IATA NDC/ONE Order compliance:
+            # New fields for IATA NDC/ONE Order compliance:
             "NDCVersion": "5.0",
             "ONEOrderReference": legacy_record.get("order_ref", "N/A")
         }
-        logger.info("Legacy booking mapped successfully for BookingID: %s", standardized_record["BookingID"])
+        logger.info("Mapped legacy booking for BookingID: %s", standardized_record["BookingID"])
         return standardized_record
     except Exception as e:
         logger.error("Error mapping legacy booking: %s", e)
         return {}
 
 if __name__ == "__main__":
-    # Example legacy record
     legacy_record_example = {
         "bk_id": "L12345",
         "name": "John Doe",
