@@ -1,5 +1,5 @@
 """
-feature_extraction.py: Extracts and engineers features from raw data for modeling.
+Extracts and engineers features from raw data for modeling.
 Enhanced to incorporate Islamic travel calendars and customer loyalty features.
 """
 
@@ -28,15 +28,16 @@ def add_rolling_features(df: pd.DataFrame, window: int = 3) -> pd.DataFrame:
 def integrate_halal_calendar(df: pd.DataFrame) -> pd.DataFrame:
     """
     Incorporate a Halal event indicator based on an external Islamic travel event calendar.
-    For demonstration, use a simple hardcoded date range.
+    For demonstration, mark dates between 2024-06-10 and 2024-06-20 as Halal event period.
     """
-    # Example: Mark dates between 2024-06-10 and 2024-06-20 as Halal event period.
-    df['HalalEventIndicator'] = df['DepartureDate'].apply(lambda date: 1 if pd.notnull(date) and datetime(2024, 6, 10) <= date <= datetime(2024, 6, 20) else 0)
+    df['HalalEventIndicator'] = df['DepartureDate'].apply(
+        lambda date: 1 if pd.notnull(date) and datetime(2024, 6, 10) <= date <= datetime(2024, 6, 20) else 0)
     return df
 
 def integrate_loyalty_data(df: pd.DataFrame, loyalty_df: pd.DataFrame) -> pd.DataFrame:
     """
     Merge loyalty program data into the main DataFrame to create a LoyaltyIndex feature.
+    
     Assumes loyalty_df contains columns 'BookingID' and 'LoyaltyScore'.
     """
     merged_df = pd.merge(df, loyalty_df[['BookingID', 'LoyaltyScore']], on='BookingID', how='left')
@@ -53,7 +54,6 @@ def extract_features(df: pd.DataFrame, loyalty_df: pd.DataFrame = None) -> pd.Da
     df = integrate_halal_calendar(df)
     if loyalty_df is not None:
         df = integrate_loyalty_data(df, loyalty_df)
-    # Create an interaction term: Price adjusted by weekday factor
     if 'Price' in df.columns and 'DepartureWeekday' in df.columns:
         df['WeekdayPriceFactor'] = df['Price'] * (df['DepartureWeekday'] + 1)
     logger.info("Feature extraction completed with extended features.")
