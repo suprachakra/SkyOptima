@@ -1,5 +1,5 @@
 """
-optimization.py: Determines the best pricing strategy using optimization techniques.
+Determines the best pricing strategy using optimization techniques.
 The module has been updated to factor in dynamic currency hedging.
 """
 
@@ -22,11 +22,11 @@ def optimize_pricing(base_price: float, forecast_demand: float, currency_factor:
     Returns:
         float: Optimized price.
     """
-    # Objective: maximize revenue = (base_price + x) * forecast_demand
-    # For minimization: minimize -x * forecast_demand, because base_price is constant.
+    # Objective: maximize revenue = (base_price + x) * forecast_demand.
+    # For minimization: minimize -x * forecast_demand (base price is constant).
     c = [-forecast_demand]  # Negative coefficient to maximize x
     
-    # Constraint: price adjustment x is between -20 and 20
+    # Constraint: price adjustment x is limited, for example, between -20 and 20.
     bounds = [(-20, 20)]
     
     result = linprog(c, bounds=bounds, method='highs')
