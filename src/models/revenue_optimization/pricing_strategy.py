@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 pricing_strategy.py: Implements a dynamic pricing strategy module with carbon-aware adjustments.
 This module integrates sustainability (via real-time EU ETS carbon pricing) and dynamic currency hedging.
@@ -44,4 +45,23 @@ def calculate_optimal_price(base_price: float, forecast_demand: float,
         float: Recommended optimal price.
     """
     lambda_CO2 = fetch_eu_ets_price()  # Carbon cost in €/ton
-    # Example dynamic currency hedge factor (for 18 currency
+    # Dynamic currency hedge factor (example: 2% adjustment for 18 currency pairs)
+    currency_hedge_factor = 1.02
+    
+    # Calculate price adjustment based on demand deviation
+    demand_adjustment = elasticity * (forecast_demand - baseline_demand)
+    
+    # Carbon cost adjustment (assumes route_emissions provided in appropriate units)
+    carbon_adjustment = lambda_CO2 * route_emissions  
+    
+    # Compute optimal price
+    optimal_price = (base_price + demand_adjustment + carbon_adjustment) * currency_hedge_factor
+    logger.info("Optimal price calculated: %.2f (Base: %.2f, Demand Adjustment: %.2f, Carbon Adjustment: %.2f, Currency Factor: %.2f)",
+                optimal_price, base_price, demand_adjustment, carbon_adjustment, currency_hedge_factor)
+    return optimal_price
+
+if __name__ == "__main__":
+    base = 250.0
+    forecast = 120
+    price = calculate_optimal_price(base, forecast, baseline_demand=100, elasticity=0.1, route_emissions=0.05)
+    print("Optimal Price: €%.2f" % price)
