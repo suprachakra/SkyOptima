@@ -21,7 +21,7 @@
 
 - **Comprehensive Monitoring & Operational Excellence:**  
   - Features interactive dashboards, multi-tiered alerting systems, and extensive automated testing (unit, integration, performance, and security).
-  - Includes detailed runbooks, disaster recovery plans, and operational best practices for smooth, resilient operations.
+  - Includes detailed runbooks, disaster recovery plans and operational best practices for smooth, resilient operations.
 
 - **Cross-Functional Integration & Agile Alignment:**  
   - Seamlessly integrates with legacy systems and internal platforms via robust APIs.
