@@ -13,7 +13,7 @@
 
 - **Robust Data Integration & Governance:**  
   - Ingests data from diverse internal and external sources, including competitor pricing, market trends, weather, and economic indicators.
-  - Enforces strict data governance, anomaly detection, and provenance tracking, with optional blockchain integration for data integrity.
+  - Enforces strict data governance, anomaly detection, and provenance tracking with optional blockchain integration for data integrity.
 
 - **Scalable, Microservices-Based Architecture:**  
   - Built with containerized microservices (Docker/Kubernetes) and automated CI/CD pipelines for global scalability and high availability.
